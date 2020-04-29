@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hdevelop file_version="1.1" halcon_version="12.0">
+<procedure name="main">
+<interface/>
+<body>
+<l>dev_update_off ()</l>
+<l>dev_close_window ()</l>
+<c>*下面注释这段是产生训练文件</c>
+<c>*读取矿车和模板图片</c>
+<l>* read_image (Image, 'G:/我的地盘/毕设用/AA毕设\'s/训练.png')</l>
+<l>* dev_open_window_fit_image (Image, 0, 0, -1, -1, WindowHandle)</l>
+<l>* dev_set_draw ('fill')</l>
+<l>* dev_set_color ('red')</l>
+<l>* dev_set_line_width (3)</l>
+<c>*获取运动模糊后的图像</c>
+<l>* simulate_motion (Image, MovedImage, 40, 0, 3)</l>
+<c>*获取维纳滤波后的图像</c>
+<l>* get_image_size (MovedImage, Width1, Height1)</l>
+<l>* gen_psf_motion(psf,Width1,Height1,40,0,3)</l>
+<l>* median_image(MovedImage,noisefiltered,'circle',1,0)</l>
+<l>* wiener_filter (MovedImage, psf, noisefiltered, RestoredImage)</l>
+<l>* median_image(RestoredImage,RestoredImage1,'circle',1,0)</l>
+<c></c>
+<l>* rgb1_to_gray (RestoredImage1, GrayImage)</l>
+<l>* convert_image_type (GrayImage, ImageConverted, 'byte')</l>
+<l>* threshold (GrayImage, Regions, 155.12, 365.75)</l>
+<l>* connection (Regions, ConnectedRegions)</l>
+<l>* select_shape (ConnectedRegions, SelectedRegions, 'area', 'and', 239.45, 1000)</l>
+<l>* sort_region (SelectedRegions, SortedRegions, 'first_point', 'true', 'row')</l>
+<l>* count_obj (SelectedRegions, Number)</l>
+<l>* class_num := ['A','B','0','1','2','3','4','5','6','7','8','9']</l>
+<l>* delete_file ('OCRTrain.trf')</l>
+<c>*mlp</c>
+<l>*  for h:=0 to Number-1 by 1</l>
+<l>*       select_obj (SelectedRegions, Region, h+1)</l>
+<l>*       class :=int(h/15.0)</l>
+<c>     </c>
+<c>     </c>
+<l>*      append_ocr_trainf(Region,ImageConverted,class_num[class],'OCRTrain.trf')</l>
+<l>*  endfor</l>
+<c></c>
+<c>*使用原始数据集训练的</c>
+<l> read_ocr_trainf_names('OCRTrain.trf',CharacterNames,CharacterCount)</l>
+<l> create_ocr_class_mlp(20,30,'constant','default',CharacterNames,60,'none',10,42,OCRHandle)</l>
+<l>trainf_ocr_class_mlp(OCRHandle,'OCRTrain.trf',200, 1, 0.001, Error, ErrorLog)</l>
+<c></c>
+<l>write_ocr_class_mlp (OCRHandle, 'ocrmlp.omc')</l>
+<l>clear_ocr_class_mlp (OCRHandle)</l>
+<c></c>
+<c>*运用OCR的浏览器可以生成字符的变形</c>
+<l>*  read_ocr_trainf_names('OCRTRAIN_CHANGE.trf',CharacterNames,CharacterCount)</l>
+<l>*  create_ocr_class_mlp(20,30,'constant','default',CharacterNames,60,'none',10,42,OCRHandle)</l>
+<l>* trainf_ocr_class_mlp(OCRHandle,'OCRTrain.trf',200, 1, 0.001, Error, ErrorLog)</l>
+<c></c>
+<l>* write_ocr_class_mlp (OCRHandle, 'ocrmlp_change.omc')</l>
+<l>* clear_ocr_class_mlp (OCRHandle)</l>
+<c></c>
+<c></c>
+</body>
+<docu id="main">
+<parameters/>
+</docu>
+</procedure>
+</hdevelop>
