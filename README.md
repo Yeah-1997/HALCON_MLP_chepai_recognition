@@ -1,0 +1,2 @@
+# HALCON_MLP_chepai_recognition
+Halcon MLP车牌识别的源代码
